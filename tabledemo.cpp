@@ -18,13 +18,23 @@ unsigned int user_remove(Table &t);
 int main() {
     
     cout << "Demonstrate very small table\n";
-    Table t(5);
+    Table t(10);
     t.put(7, "seven");
     t.put(9, "nine");
     t.put(17, "Seventeen");
-    t.put(4, "four");
-    t.put(36, "Thirty-six");
-   cout << t;
+    t.put(4, "one");
+    t.put(100, "onehundred");
+    t.put(50, "fifty");
+    t.put(30, "thirty");
+    t.put(70, "seventy");
+    t.put(2, "two");
+    t.put(34, "thirtyfour");
+    //t.put(4, "four");
+    //t.put(36, "Thirty-six");
+    //t.put(40, "negative five");
+    //t.put(10, "ten");
+   //t.put(11, "eleven");
+  cout << t;
     cout << "key accesses: " << Entry::access_count() << endl;
     
     cout << "\nNow demonstrate default size table\n";

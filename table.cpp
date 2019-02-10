@@ -102,104 +102,114 @@ bucket* Table::returnbuck(int index) const {
 	return &(p1[index]);
 }
 
- void merge(vector<Entry> b, vector<Entry>::iterator a, int leftsize, int rightsize) {
-	vector<Entry>* temp;
-	int copied = 0;
-	int leftcopy = 0;
-	int rightcopy = 0;
-	temp = new vector<Entry>(leftsize + rightsize);
-	while ((leftcopy < leftsize) && (rightcopy < rightsize)) {
-		if ((a + leftcopy)->get_key() < ((a + leftcopy + rightcopy))->get_key()) {
-			int alpha;
-			string beta;
-			alpha = ((a + leftcopy))->get_key();
-			beta = ((a + leftcopy))->get_data();
-			(temp->at(copied)).set_key(alpha);
-			(temp->at(copied)).set_data(beta);
+void merge(Entry a[], size_t leftArraySize, size_t rightArraySize) {
+	// Note: we are assuming the left and right sub arrays are sorted
+	Entry* tempArray;		// tempArray to hold sorted elements
+	size_t copied = 0; 	// num elements copied to tempArray
+	size_t leftCopied = 0;	// num elements copied from leftArray
+	size_t rightCopied = 0;	// num elements copied from rightArray
+
+	// create temp array
+	tempArray = new Entry[leftArraySize + rightArraySize];
+
+	// merge left and right arrays into temp in sorted order
+	while ((leftCopied < leftArraySize) && (rightCopied < rightArraySize)) {
+		if ((a[leftCopied]).get_key() < ((a + leftArraySize)[rightCopied]).get_key()) {
+			int alpha = (a[leftCopied]).get_key();
+			string beta = (a[leftCopied]).get_data();
+			(tempArray[copied]).set_key(alpha);
+			(tempArray[copied]).set_data(beta);
 			copied++;
-			leftcopy++;
+			leftCopied++;
+		} else {
+			 int alpha = (a + leftArraySize)[rightCopied].get_key();
+                        string beta = ((a + leftArraySize)[rightCopied]).get_data();
+                        (tempArray[copied]).set_key(alpha);
+                        (tempArray[copied]).set_data(beta);
+                        copied++;
+                        rightCopied++;
 		}
-		else {
+	}
 
-			int alpha;
-			string beta;
-			alpha = ((a + rightcopy + leftsize))->get_key();
-			beta = ((a + rightcopy + leftsize))->get_data();
-			(temp->at(copied)).set_key(alpha);
-                        (temp->at(copied)).set_data(beta);
-			copied++;	
-			rightcopy++;
-		}
+	// copy remaining elements from left/right sub arrays into tempArray
+
+	// if elements in leftArray still exist, then ...
+	while (leftCopied < leftArraySize) {
+		   int alpha = (a[leftCopied]).get_key();
+                   string beta = (a[leftCopied]).get_data();
+                   (tempArray[copied]).set_key(alpha);
+                   (tempArray[copied]).set_data(beta);
+                   copied++;
+                   leftCopied++;
 	}
-	while (leftcopy < leftsize) {
- 
-		int alpha;
-                 string beta;
-                 alpha = ((a + leftcopy))->get_key();
-                 beta = ((a + leftcopy))->get_data();
-                (temp->at(copied)).set_key(alpha);
-		(temp->at(copied)).set_data(beta);
-		copied++;
-		leftcopy++;
-	}
-	 while (rightcopy < rightsize) {
- 
-		int alpha;
-                 string beta;
-                 alpha = ((a + rightcopy + leftsize))->get_key();
-                 beta = ((a + rightcopy + leftsize))->get_data();
-                (temp->at(copied)).set_key(alpha);
-                (temp->at(copied)).set_data(beta);
+
+
+	// if elements in rightArray still exist, then ...
+	while (rightCopied < rightArraySize) {
+		int alpha = (a + leftArraySize)[rightCopied].get_key();
+                string beta = ((a + leftArraySize)[rightCopied]).get_data();
+                (tempArray[copied]).set_key(alpha);
+                (tempArray[copied]).set_data(beta);
                 copied++;
-                rightcopy++;
-        }
-	for (int j = 0; j < leftsize + rightsize; j++) {
-		int alpha;
-                 string beta;
-                 alpha = (temp->at(j)).get_key();
-                 beta = (temp->at(j)).get_data();
-                (a + j)->set_key(alpha);
-                (a + j)->set_data(beta);
-		
+                rightCopied++;
 	}
-	temp->clear();
+	// Replace the sorted values into the original array
+	for (int i = 0; i < leftArraySize + rightArraySize; i++) {
+		int alpha = ((tempArray)[i]).get_key();
+		string beta = ((tempArray)[i]).get_data();
+                (a[i]).set_key(alpha);
+                (a[i]).set_data(beta);
+	}
+
+	// free up memory
+	delete [] tempArray;
 }
-	
 
 
- void mergesort(vector<Entry> b, vector<Entry>::iterator a, int size) {
-	int leftsize;
-	int rightsize;
+void mergesort(Entry a[], size_t size) {
+	size_t leftArraySize;
+	size_t rightArraySize;
+	//cout << "R1" << (a[0]).get_key() << endl;
 	if (size > 1) {
-		leftsize = size/2;
-		rightsize = size - leftsize;
-		mergesort(b, a, leftsize);
-		mergesort(b, a + leftsize,rightsize);
-		merge(b, a, leftsize, rightsize);
+		leftArraySize = size / 2;
+		rightArraySize = size - leftArraySize;
+	
+		// call mergesort on left array
+		mergesort(a, leftArraySize); 
+		//cout << "R2" << (a[0]).get_key() << endl;	
+		// call mergesort on right array
+		mergesort((a + leftArraySize), rightArraySize);
+		//cout << "R3" << (a[0]).get_key() << endl;
+		// left and right sorted arrays together
+		merge(a, leftArraySize, rightArraySize);
+		//cout << "R4" << (a[0]).get_key() << endl;
 	}
+	
 }
-
 
 
 std::ostream& operator<< (std::ostream& out, const Table& t) {
-	bucket p2;
-	p2.arr = vector<Entry>((t.returnbuck(0))->arr.size());
-	for (int i = 0; i < (t.returnbuck(0))->arr.size(); i++) {
-		unsigned int alpha;
-		string beta;
-		alpha = ((t.returnbuck(0))->arr.at(i)).get_key();
-		beta = ((t.returnbuck(0))->arr.at(i)).get_data();
-		((p2.arr).at(i)).set_key(alpha);
-		((p2.arr).at(i)).set_data(beta);
-		(p2.size)++;
+	int k;
+	k = 0;
+	for (int a = 0; a < (t.returnsize()); a++) {
+		k = k + (t.returnbuck(a))->size;
 	}
-	for (int i = 1; i < t.returnsize(); i++) {
-		(p2.arr).insert((p2.arr).end(), (t.returnbuck(i))->arr.begin(), (t.returnbuck(i))->arr.end());
-		(p2.size) = (p2.size) + (t.returnbuck(i))->arr.size();
+	Entry array[k];
+	k = 0;
+	for (int i = 0; i < t.returnsize(); i++) {
+		for (int j = 0; j < (t.returnbuck(i))->arr.size(); j++) {
+			unsigned int alpha;
+			string beta;
+			alpha = ((t.returnbuck(i))->arr.at(j)).get_key();
+			beta = ((t.returnbuck(i))->arr.at(j)).get_data();
+			(array[k]).set_key(alpha);
+			(array[k]).set_data(beta);		
+			k++;
+		}
 	}
-	mergesort((p2.arr), (p2.arr).begin(), (p2.arr).size());
-	for (int i = 0; i < (p2.arr).size(); i++) {
-		out << ((p2.arr).at(i)).get_key() << ":" << ((p2.arr).at(i)).get_data() << "\n";
+	mergesort(array, k);
+	for (int i = 0; i < k; i++) {
+		out << (array[i]).get_key() << ":" << (array[i]).get_data() << "\n";
 	}
 	return out;
 }

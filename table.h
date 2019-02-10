@@ -15,6 +15,10 @@ using namespace std;
         int size = 0;
    };
 
+void merge(int a[], size_t leftArraySize, size_t rightArraySize);
+
+void mergesort(int a[], size_t size);
+
 class Table {
 public:
 	Table(unsigned int max_entries = 100);
@@ -27,8 +31,6 @@ public:
 	int returnsize() const;
 	Entry returnentry(int key) const;
 	bucket* returnbuck(int index) const;
-	friend void merge(vector<Entry> b, vector<Entry>::iterator a, int leftsize, int rightsize);
-	friend void mergesort(vector<Entry> b, vector<Entry>::iterator a, int size);
 
 private:
 	int numentries;
