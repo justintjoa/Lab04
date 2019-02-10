@@ -7,92 +7,112 @@ using namespace std;
 
 Table::Table() {
 	numentries = 100;
-	int a;
-	a = 0;
-	list.resize(100);
-	for (vector<Entry>::iterator i = list.begin(); i < list.end(); i++) {
-		(*i).set_key(a);
-		(*i).set_data("");
-		a++;
-	}
+	p1 = new bucket[100];
 }
 
-Table::Table(int size) {
+Table::Table(unsigned int size) {
 	numentries = size;
-	int a;
-	a = 0;
-	list.resize(size);
-        for (vector<Entry>::iterator i = list.begin(); i < list.end(); i++) {
-                (*i).set_key(a);
-                (*i).set_data("");
-                a++;
-        }
+	p1 = new bucket[size];
 }           
 
 Table::Table(unsigned int entries, std::istream& input) {
 	numentries = entries;
-        int a;
-        a = 0;
-	list.resize(entries);
-        for (vector<Entry>::iterator i = list.begin(); i < list.end(); i++) {
-                (*i).set_key(a);
-                (*i).set_data("");
-                a++;
-        }
-	for (int i = 0; i < a; i++) {   
+	p1 = new bucket[numentries];
+	for (int i = 0; i < entries; i++) {   
 		Entry e;
   		input >> e;
 		int a;
 		a = (e.get_key())%numentries;
-		while ((list.at(a)).access_count() != 0) {
-			a = 1 + a%(numentries - 2);
-		}
-		(list.at(a)).set_data(e.get_data());
+		((p1[a]).arr).push_back(e);
+		((p1[a]).size)++;
 	}
 }
 
+bool Table::remove(unsigned int key) {
+        int a;
+        a = key%numentries;
+        bucket* p2; 
+        p2 = &(p1[key]);
+        for (int i = 0; i < ((p2)->size); i++) {
+                if ((p2->arr).at(i) != key) {
+                        continue;
+                }   
+                else {
+                        (p2->arr).erase((p2->arr).begin() + i); 
+                        ((p2)->size)--;
+			return true;
+                }
+        }
+        return false;
+}
+
+
 void Table::put(unsigned int key, std::string data) {
+	remove(key);	
+	Entry e;
+	e.set_key(key);
+	e.set_data(data);
 	int a;
 	a = key%numentries;
-	(list.at(a)).set_data(data);
+	((p1[a]).arr).push_back(e);
+        ((p1[a]).size)++;
 }
 
 void Table::put(Entry e) {
+	remove(e.get_key());
 	int a;
 	a = (e.get_key())%numentries;
-	(list.at(a)).set_data(e.get_data());
+	((p1[a]).arr).push_back(e);
+        ((p1[a]).size)++;
 }
 
 std::string Table::get(unsigned int key) const {
 	std::ostringstream oss;
-  	oss << (list.at(key)).get_data(); 
-  	return oss.str();
-}
-
-bool Table::remove(unsigned int key) {
-	if ((list.at(key)).access_count() == 0) {
-		return false;
+	int a;
+	a = key%numentries;
+	bucket* p2;
+	p2 = &(p1[a]);
+  	for (int i = 0; i < ((p2)->size); i++) {
+		if (((p2->arr).at(i)).get_key() != key) {
+			continue;
+		}
+		else {
+	
+			oss <<  (((p2)->arr).at(i)).get_data(); 
+  		}
 	}
-	else {
-		Entry e;
-		e.set_key(key);
-		e.set_data("");
-		this->put(e);
-		return true;
-	}
+	return oss.str();
 }
 
 int Table::returnsize() const {
 	return numentries;
 }
 Entry Table::returnentry(int key) const {
-        return list.at(key);
+	int a;
+	a = key%numentries;
+	bucket* p2;
+	p2 = &(p1[a]);
+	  for (int i = 0; i < ((p2)->size); i++) {
+                if (((p2->arr).at(i)).get_key() != key) {
+                        continue;
+                }
+                else {
+                	return ((p2)->arr).at(i);
+		}
+        }
+}
+
+bucket* Table::returnbuck(int index) const {
+	return &(p1[index]);
 }
 
 std::ostream& operator<< (std::ostream& out, const Table& t) {
 	for (int i = 0; i < t.returnsize(); i++) {
-		out << (t.returnentry(i)).get_key() << ":" <<
-		(t.returnentry(i)).get_data() << "\n";
+		bucket* p2;
+		p2 = t.returnbuck(i);
+		for (int j = 0; j < p2->size; j++) {
+			out << ((p2->arr).at(j)).get_key() << ":" << ((p2->arr).at(j)).get_data() << "\n";
+		}
 	}
 	return out;
 }

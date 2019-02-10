@@ -24,7 +24,7 @@ int main() {
     t.put(17, "Seventeen");
     t.put(4, "four");
     t.put(36, "Thirty-six");
-    cout << t;
+   cout << t;
     cout << "key accesses: " << Entry::access_count() << endl;
     
     cout << "\nNow demonstrate default size table\n";
@@ -52,8 +52,7 @@ int main() {
         cout << "No fips.txt in current directory. Quitting\n";
         return 1;
     }
-   Table t3(10, input);
-	 //Table t3(3142, input);
+	 Table t3(3142, input);
     cout << "Try getting some entries by FIPS code keys\n"
     << "(enter 0 key to quit)\n";
     while (user_get(t3) != 0)

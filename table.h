@@ -10,10 +10,15 @@
 
 using namespace std;
 
+  struct bucket {
+        vector<Entry> arr;
+        int size = 0;
+   };
+
 class Table {
 public:
 	Table();
-	Table(int size);
+	Table(unsigned int size);
 	Table(unsigned int entries, std::istream& input);
 	void put(unsigned int key, std::string data);
 	void put(Entry e);
@@ -22,10 +27,11 @@ public:
 	friend std::ostream& operator<< (std::ostream& out,const Table& t);
 	int returnsize() const;
 	Entry returnentry(int key) const;
-
+	bucket* returnbuck(int index) const;
+	
 private:
 	int numentries;
-	vector<Entry> list;
+	bucket* p1;
 
 };
 
