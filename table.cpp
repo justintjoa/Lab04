@@ -102,10 +102,93 @@ bucket* Table::returnbuck(int index) const {
 	return &(p1[index]);
 }
 
+ void merge(vector<Entry> a, int leftsize, int rightsize) {
+	vector<Entry>* temp;
+	int copied = 0;
+	int leftcopy = 0;
+	int rightcopy = 0;
+	temp = new vector<Entry>(leftsize + rightsize);
+	while ((leftcopy < leftsize) && (rightcopy < rightsize)) {
+		if ((a.at(leftcopy)).get_key() < (a.at(leftcopy + rightcopy)).get_key()) {
+			int alpha;
+			string beta;
+			alpha = (a.at(leftcopy)).get_key();
+			beta = (a.at(leftcopy)).get_data();
+			(temp->at(copied)).set_key(alpha);
+			(temp->at(copied)).set_data(beta);
+			copied++;
+			leftcopy++;
+		}
+		else {
+
+			int alpha;
+			string beta;
+			alpha = (a.at(rightcopy + leftsize)).get_key();
+			beta = (a.at(rightcopy + leftsize)).get_data();
+			(temp->at(copied)).set_key(alpha);
+                        (temp->at(copied)).set_data(beta);
+			copied++;	
+			rightcopy++;
+		}
+	}
+	while (leftcopy < leftsize) {
+ 
+		int alpha;
+                 string beta;
+                 alpha = (a.at(leftcopy)).get_key();
+                 beta = (a.at(leftcopy)).get_data();
+                (temp->at(copied)).set_key(alpha);
+		(temp->at(copied)).set_data(beta);
+		copied++;
+		leftcopy++;
+	}
+	 while (rightcopy < rightsize) {
+ 
+		int alpha;
+                 string beta;
+                 alpha = (a.at(rightcopy + leftsize)).get_key();
+                 beta = (a.at(rightcopy + leftsize)).get_data();
+                (temp->at(copied)).set_key(alpha);
+                (temp->at(copied)).set_data(beta);
+                copied++;
+                rightcopy++;
+        }
+	for (int i = 0; i < leftsize + rightsize; i++) {
+ 
+		int alpha;
+                 string beta;
+                 alpha = (temp->at(i)).get_key();
+                 beta = (temp->at(i)).get_data();
+                (temp->at(i)).set_key(alpha);
+                (temp->at(i)).set_data(beta);
+	}
+	temp->clear();
+}
+	
+
+
+ void mergesort(vector<Entry> a, int size) {
+	int leftsize;
+	int rightsize;
+	if (size > 1) {
+		leftsize = size/2;
+		rightsize = size - leftsize;
+		mergesort(a, leftsize);
+		vector<Entry>::const_iterator first = a.begin() + leftsize;
+		vector<Entry>::const_iterator last = a.end();
+		vector<Entry> newVec(first, last);
+		mergesort(newVec,rightsize);
+		merge(a, leftsize, rightsize);
+	}
+}
+
+
+
 std::ostream& operator<< (std::ostream& out, const Table& t) {
 	for (int i = 0; i < t.returnsize(); i++) {
 		bucket* p2;
 		p2 = t.returnbuck(i);
+		mergesort(p2->arr, (p2->arr).size());
 		for (int j = 0; j < p2->size; j++) {
 			out << ((p2->arr).at(j)).get_key() << ":" << ((p2->arr).at(j)).get_data() << "\n";
 		}
