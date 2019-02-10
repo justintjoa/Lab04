@@ -27,8 +27,8 @@ public:
 	int returnsize() const;
 	Entry returnentry(int key) const;
 	bucket* returnbuck(int index) const;
-	friend void merge(vector<Entry> a, int leftsize, int rightsize);
-	friend void mergesort(vector<Entry> a, int size);
+	friend void merge(vector<Entry> b, vector<Entry>::iterator a, int leftsize, int rightsize);
+	friend void mergesort(vector<Entry> b, vector<Entry>::iterator a, int size);
 
 private:
 	int numentries;
