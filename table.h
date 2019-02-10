@@ -17,8 +17,7 @@ using namespace std;
 
 class Table {
 public:
-	Table();
-	Table(unsigned int size);
+	Table(unsigned int max_entries = 100);
 	Table(unsigned int entries, std::istream& input);
 	void put(unsigned int key, std::string data);
 	void put(Entry e);

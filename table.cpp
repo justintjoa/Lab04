@@ -5,14 +5,10 @@
 
 using namespace std;
 
-Table::Table() {
-	numentries = 100;
-	p1 = new bucket[100];
-}
 
-Table::Table(unsigned int size) {
-	numentries = size;
-	p1 = new bucket[size];
+Table::Table(unsigned int max_entries) {
+	numentries = max_entries;
+	p1 = new bucket[max_entries];
 }           
 
 Table::Table(unsigned int entries, std::istream& input) {
